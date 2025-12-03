@@ -1,0 +1,27 @@
+# Ignore OS-specific files
+.DS_Store
+Thumbs.db
+
+# Ignore IDE/editor settings
+.vscode/
+.idea/
+
+# Ignore PHP-specific files
+vendor/
+composer.lock
+
+# Ignore environment and config files
+.env
+*.ini
+
+# Ignore uploads folder (jika berisi file user)
+uploads/*
+
+# Ignore cache and logs
+*.log
+cache/
+tmp/
+
+# Ignore system files
+*.bak
+*.swp
