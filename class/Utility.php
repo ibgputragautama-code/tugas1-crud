@@ -1,36 +1,24 @@
-
 <?php
 class Utility {
-    public static function redirect($url, $msg = '', $prefill = []) {
-        if (!empty($prefill)) {
-            $_SESSION['prefill'] = $prefill;
+    public static function setFlash($message, $type = 'success') {
+        if (session_status() === PHP_SESSION_NONE) {
+            session_start();
         }
-        if ($msg) {
-            $_SESSION['flash']['message'] = $msg;
-        }
-        header("Location: " . BASE_URL . $url);
-        exit();
+        $_SESSION['flash'] = [
+            'message' => $message,
+            'type' => $type
+        ];
     }
 
     public static function showFlash() {
+        if (session_status() === PHP_SESSION_NONE) {
+            session_start();
+        }
         if (isset($_SESSION['flash'])) {
-            echo '<p class="flash-message">' . $_SESSION['flash']['message'] . '</p>';
+            $flash = $_SESSION['flash'];
+            $class = ($flash['type'] === 'success') ? 'flash-success' : 'flash-error';
+            echo "<div class='{$class}'>{$flash['message']}</div>";
             unset($_SESSION['flash']);
         }
     }
-
-    public static function getPrefill($keys = []) {
-        $data = [];
-        foreach ($keys as $key) {
-            $data[$key] = $_SESSION['prefill'][$key] ?? '';
-        }
-        return $data;
-    }
-
-    public static function clearPrefill() {
-        if (isset($_SESSION['prefill'])) {
-            unset($_SESSION['prefill']);
-        }
-    }
 }
-?>

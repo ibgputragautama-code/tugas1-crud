@@ -1,28 +1,30 @@
-
-<?php
-require __DIR__ . '/inc/config.php';
-$prefill = Utility::getPrefill(['name','category','price','stock','status']);
-?>
+<?php require __DIR__ . '/inc/config.php'; ?>
 <!DOCTYPE html>
 <html>
 <head>
     <title>Tambah Produk</title>
-    css/style.css
+    <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
 <h1>Tambah Produk</h1>
-<?php Utility::showFlash(); ?>
-save.php
-<input type="text" name="name" placeholder="Nama" value="<?= $prefill['name'] ?>" required>
-<input type="text" name="category" placeholder="Kategori" value="<?= $prefill['category'] ?>" required>
-<input type="number" name="price" placeholder="Harga" value="<?= $prefill['price'] ?>" required>
-<input type="number" name="stock" placeholder="Stok" value="<?= $prefill['stock'] ?>" required>
-<select name="status">
-<option value="active" <?= ($prefill['status']=='active')?'selected':''; ?>>Aktif</option>
-<option value="inactive" <?= ($prefill['status']=='inactive')?'selected':''; ?>>Nonaktif</option>
-</select>
-<input type="file" name="image">
-<button type="submit">Simpan</button>
+<nav>
+    <a href="index.php">Home</a> | 
+    <a href="list.php">Lihat Produk</a>
+</nav>
+<form action="save.php" method="post" enctype="multipart/form-data">
+    <label>Nama:</label><br>
+    <input type="text" name="name" required><br><br>
+    <label>Kategori:</label><br>
+    <input type="text" name="category" required><br><br>
+    <label>Harga:</label><br>
+    <input type="number" step="0.01" name="price" required><br><br>
+    <label>Stok:</label><br>
+    <input type="number" name="stock" required><br><br>
+    <label>Status:</label><br>
+    <input type="text" name="status" required><br><br>
+    <label>Gambar:</label><br>
+    <input type="file" name="image" accept="image/*"><br><br>
+    <button type="submit">Simpan</button>
 </form>
 </body>
 </html>

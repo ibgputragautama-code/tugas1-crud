@@ -1,33 +1,41 @@
-
 <?php
 require __DIR__ . '/inc/config.php';
-$id=$_GET['id']??0;
-$product=new Product();
-if(!$product->setById($id)){
-    Utility::redirect('list.php','Produk tidak ditemukan');
-}
+$product = new Product();
+$data = $product->getById($_GET['id']);
 ?>
 <!DOCTYPE html>
 <html>
 <head>
     <title>Edit Produk</title>
-    css/style.css
+    <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
 <h1>Edit Produk</h1>
-<?php Utility::showFlash(); ?>
-update.php
-<input type="hidden" name="id" value="<?= $product->id ?>">
-<input type="text" name="name" value="<?= $product->name ?>" required>
-<input type="text" name="category" value="<?= $product->category ?>" required>
-<input type="number" name="price" value="<?= $product->price ?>" required>
-<input type="number" name="stock" value="<?= $product->stock ?>" required>
-<select name="status">
-<option value="active" <?= ($product->status=='active')?'selected':''; ?>>Aktif</option>
-<option value="inactive" <?= ($product->status=='inactive')?'selected':''; ?>>Nonaktif</option>
-</select>
-<input type="file" name="image">
-<button type="submit">Update</button>
+
+<nav>
+    <a href="index.php">Home</a> | 
+    <a href="list.php">Lihat Produk</a>
+</nav>
+
+<form action="update.php" method="post">
+    <input type="hidden" name="id" value="<?= $data['id'] ?>">
+
+    <label>Nama:</label><br>
+    <input type="text" name="name" value="<?= htmlspecialchars($data['name']) ?>" required><br><br>
+
+    <label>Kategori:</label><br>
+    <input type="text" name="category" value="<?= htmlspecialchars($data['category']) ?>" required><br><br>
+
+    <label>Harga:</label><br>
+    <input type="number" step="0.01" name="price" value="<?= $data['price'] ?>" required><br><br>
+
+    <label>Stok:</label><br>
+    <input type="number" name="stock" value="<?= $data['stock'] ?>" required><br><br>
+
+    <label>Status:</label><br>
+    <input type="text" name="status" value="<?= htmlspecialchars($data['status']) ?>" required><br><br>
+
+    <button type="submit">Update</button>
 </form>
 </body>
 </html>

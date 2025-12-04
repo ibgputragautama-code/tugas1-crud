@@ -1,48 +1,44 @@
-
 <?php
 require __DIR__ . '/inc/config.php';
-if($_SERVER['REQUEST_METHOD']==='POST'){
-    $name=$_POST['name'];
-    $category=$_POST['category'];
-    $price=$_POST['price'];
-    $stock=$_POST['stock'];
-    $status=$_POST['status'];
-    $image_path='';
 
-    if(isset($_FILES['image']) && $_FILES['image']['error']==0){
-        $allowedTypes = ['image/jpeg','image/png'];
-        $maxSize = 2 * 1024 * 1024;
-        $fileType = mime_content_type($_FILES['image']['tmp_name']);
-        $fileSize = $_FILES['image']['size'];
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    $imageName = null;
 
-        if(!in_array($fileType,$allowedTypes)){
-            Utility::redirect('create.php','File harus JPG atau PNG',['name'=>$name,'category'=>$category,'price'=>$price,'stock'=>$stock,'status'=>$status]);
-        }
-        if($fileSize > $maxSize){
-            Utility::redirect('create.php','Ukuran file maksimal 2MB',['name'=>$name,'category'=>$category,'price'=>$price,'stock'=>$stock,'status'=>$status]);
+    if (!empty($_FILES['image']['name'])) {
+        $targetDir = __DIR__ . '/uploads/';
+
+        if (!is_dir($targetDir)) {
+            mkdir($targetDir, 0777, true);
         }
 
-        $targetDir=__DIR__.'/uploads/';
-        if(!is_dir($targetDir)) mkdir($targetDir);
-        $fileName=time().'_'.basename($_FILES['image']['name']);
-        $targetFile=$targetDir.$fileName;
-        move_uploaded_file($_FILES['image']['tmp_name'],$targetFile);
-        $image_path=$fileName;
+        $safeName = preg_replace('/[^A-Za-z0-9_\.-]/', '_', basename($_FILES['image']['name']));
+        $imageName = time() . "_" . $safeName;
+        $targetFile = $targetDir . $imageName;
+
+        // Pindahkan file upload
+        if (!move_uploaded_file($_FILES['image']['tmp_name'], $targetFile)) {
+            Utility::setFlash('Upload gambar gagal.', 'error');
+            header('Location: create.php');
+            exit;
+        }
     }
 
-    $product=new Product();
-    $product->name=$name;
-    $product->category=$category;
-    $product->price=$price;
-    $product->stock=$stock;
-    $product->status=$status;
-    $product->image_path=$image_path;
+    // Simpan data produk
+    $product = new Product();
+    $product->create(
+        $_POST['name'],
+        $_POST['category'],
+        $_POST['price'],
+        $_POST['stock'],
+        $_POST['status'],
+        $imageName
+    );
 
-    if($product->save()){
-        Utility::clearPrefill();
-        Utility::redirect('list.php','Produk berhasil ditambahkan');
-    }else{
-        Utility::redirect('create.php','Gagal menambahkan produk',['name'=>$name,'category'=>$category,'price'=>$price,'stock'=>$stock,'status'=>$status]);
-    }
+    Utility::setFlash('Produk berhasil ditambahkan!', 'success');
+    header('Location: list.php');
+    exit;
+} else {
+    // Jika bukan POST, kembalikan ke form
+    header('Location: create.php');
+    exit;
 }
-?>
